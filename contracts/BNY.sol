@@ -1,13 +1,14 @@
 
 
-pragma solidity ^0.5.3;
-import ".oraclizeAPI_0.5.sol";
-contract BNY_DATA is usingOraclize {   
+pragma solidity ^0.5.1;
+import "./oraclizeAPI_0.5.sol";
+contract BNYprice is usingOraclize {
 
-    address BNYaddress = address(0xda78F2DF35C15D7D0b5d0125FD2a1a6981B1b294);    
-    address XBNYaddress = address(0x946EA7E2D6241227e124901F55F37249740c336d);
+    address BNYaddress = address(0x6C119DFD91AA53970d6029FFE2220e84416B981C);
+    address XBNYaddress = address(0xbf36ff6d4C9F00c47690BA5ad919F9754b0Fd0A0);
     uint256 canoffshore ;
     uint256 priceInUsd = 2;
+    uint256 public priceUINT ;
      string public converted;
     string public priceETHXBT;
 
@@ -28,11 +29,13 @@ contract BNY_DATA is usingOraclize {
     )
         public
     {
-        require(msg.sender == oraclize_cbAddress());
+        require(msg.sender == oraclize_cbAddress(),"Only Oraclize");
         update(); // Recursively update the price stored in the contract...
         priceETHXBT = _result;
         emit LogNewKrakenPriceTicker(priceETHXBT);
         stringFloatToUnsigned(priceETHXBT);
+        priceUINT = safeParseInt(priceETHXBT, 10);
+        
     }
 
     function update()
@@ -53,7 +56,7 @@ contract BNY_DATA is usingOraclize {
         (bool success, bytes memory data) =   BNYaddress.call(abi.encodeWithSignature("GetbalanceOf(address)",msg.sender));
         bytes32 preUserBalance;
         uint offset = 32;
-        assembly {
+        assembly{
         preUserBalance := mload(add(data, offset))
         }
 
@@ -61,8 +64,9 @@ contract BNY_DATA is usingOraclize {
 
         require(userBalance >= value);
         if(userBalance >= value){
+        
         BNYaddress.call(abi.encodeWithSignature("reduceBNY(address,uint256)",msg.sender,value));
-        XBNYaddress.call(abi.encodeWithSignature("increaseXBNY(address,uint256)",msg.sender,value/priceInUsd));
+        XBNYaddress.call(abi.encodeWithSignature("increaseXBNY(address,uint256)",msg.sender,(value*priceUINT)/10000000000 ));
         }
     }
     
@@ -80,7 +84,7 @@ contract BNY_DATA is usingOraclize {
         require(userBalance >= value);
         if(userBalance >= value){
         XBNYaddress.call(abi.encodeWithSignature("reduceXBNY(address,uint256)",msg.sender,value));
-        BNYaddress.call(abi.encodeWithSignature("increaseBNY(address,uint256)",msg.sender,value*priceInUsd));
+        BNYaddress.call(abi.encodeWithSignature("increaseBNY(address,uint256)",msg.sender,(value*10000000000)/priceInUsd));
         }
     }
     
