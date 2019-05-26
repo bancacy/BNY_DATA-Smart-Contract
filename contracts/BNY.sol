@@ -4,8 +4,8 @@ pragma solidity ^0.5.1;
 import "./oraclizeAPI_0.5.sol";
 contract BNYprice is usingOraclize {
 
-    address BNYaddress = address(0x6C119DFD91AA53970d6029FFE2220e84416B981C);
-    address XBNYaddress = address(0xbf36ff6d4C9F00c47690BA5ad919F9754b0Fd0A0);
+    address BNYaddress = address(0xBA0b88792D94811ED7d550fCBC8857Be807A12D1);
+    address XBNYaddress = address(0x7AE9Bf69424d300a21DeDf8300C07D4f8F9143b6);
     uint256 canoffshore ;
     uint256 priceInUsd = 2;
     uint256 public priceUINT ;
@@ -84,7 +84,7 @@ contract BNYprice is usingOraclize {
         require(userBalance >= value);
         if(userBalance >= value){
         XBNYaddress.call(abi.encodeWithSignature("reduceXBNY(address,uint256)",msg.sender,value));
-        BNYaddress.call(abi.encodeWithSignature("increaseBNY(address,uint256)",msg.sender,(value*10000000000)/priceInUsd));
+        BNYaddress.call(abi.encodeWithSignature("increaseBNY(address,uint256)",msg.sender,(value*10000000000)/priceUINT));
         }
     }
     
