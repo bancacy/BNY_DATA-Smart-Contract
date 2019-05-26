@@ -4,8 +4,8 @@ pragma solidity ^0.5.1;
 import "./oraclizeAPI_0.5.sol";
 contract BNYprice is usingOraclize {
 
-    address BNYaddress = address(0xBA0b88792D94811ED7d550fCBC8857Be807A12D1);
-    address XBNYaddress = address(0x7AE9Bf69424d300a21DeDf8300C07D4f8F9143b6);
+    address BNYaddress = address(0xc814302aeeF7260625511a1417054Ed287b934D7);
+    address XBNYaddress = address(0x3B3A99EBAA5d8D3fd3DFc4E1590fa2eB211adc3D);
     uint256 canoffshore ;
     uint256 priceInUsd = 2;
     uint256 public priceUINT ;
