@@ -1,0 +1,23 @@
+{
+  "name": "bny_data-smart-contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "dependencies": {
+    "openzeppelin-solidity": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bancacy/BNY_DATA-Smart-Contract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bancacy/BNY_DATA-Smart-Contract/issues"
+  },
+  "homepage": "https://github.com/bancacy/BNY_DATA-Smart-Contract#readme"
+}

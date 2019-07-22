@@ -1,0 +1,4 @@
+*node_modules*
+solidity-flattener
+node_modules/openzeppelin-solidity
+*node_modules/openzeppelin-solidity/*
