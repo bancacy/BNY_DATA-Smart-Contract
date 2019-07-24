@@ -2,10 +2,31 @@
 
 pragma solidity ^0.5.1;
 import "./oraclizeAPI_0.5.sol";
+
+// Andy - Is this an easier way, and clearer than using Assembly?
+contract iBnyToken {
+    // Interface for our existing contract
+    function getBalanceOf(address _user) external view returns (uint256 balance);
+    function BNY_AssetSolidification(address _user, uint256 _value) external returns (bool success);
+    function BNY_AssetDesolidification(address _user,uint256 _value) external returns (bool success);
+}
+contract iXbnyToken {
+    // Interface for our existing contract
+    function getBalanceOf(address user) external view returns (uint256 balance);
+    function reduceXBNY(address _user, uint256 _value) external returns (bool success);
+    function increaseXBNY(address _user,uint256 _value) external returns (bool success);
+}
+
+
 contract BNYprice is usingOraclize {
 
     address BNYaddress = address(0xc814302aeeF7260625511a1417054Ed287b934D7);
     address XBNYaddress = address(0x3B3A99EBAA5d8D3fd3DFc4E1590fa2eB211adc3D);
+
+    // Add the tokens in order to operate on it using methods, rather than assembly
+    iBnyToken BnyToken = iBnyToken(BNYaddress);
+    iXbnyToken XbnyToken = iXbnyToken(XBNYaddress);
+
     uint256 canoffshore ;
     uint256 priceInUsd = 2;
     uint256 public priceUINT;
@@ -52,8 +73,7 @@ contract BNYprice is usingOraclize {
     }
 
     function offshoreBNY(uint256 value) public {
-
-        (bool success, bytes memory data) =   BNYaddress.call(abi.encodeWithSignature("getBalanceOf(address)",msg.sender));
+        /* (bool success, bytes memory data) =   BNYaddress.call(abi.encodeWithSignature("getBalanceOf(address)",msg.sender));
         bytes32 preUserBalance;
         uint offset = 32;
         assembly{
@@ -65,12 +85,23 @@ contract BNYprice is usingOraclize {
         require(userBalance >= value);
         if(userBalance >= value){
             BNYaddress.call(abi.encodeWithSignature("BNY_AssetSolidification(address,uint256)",msg.sender,value));
-            XBNYaddress.call(abi.encodeWithSignature("XBNY_AssetDesolidification(address,uint256)",msg.sender,(value*priceUINT)/10000000000 ));
+            XBNYaddress.call(abi.encodeWithSignature("increaseXBNY(address,uint256)",msg.sender,(value*priceUINT)/10000000000 ));
+        } */
+
+        // Andy - is this an easier way to get balance? One liner.
+        uint userBalance = BnyToken.getBalanceOf(msg.sender);
+
+        if(userBalance >= value){
+            BnyToken.BNY_AssetSolidification(msg.sender,value);
+            XbnyToken.increaseXBNY(msg.sender,(value * priceUINT)/10000000000);
         }
+        // Andy - is this clearer also?
+
+
     }
 
     function offshoreXBNY(uint256 value) public {
-        (bool success, bytes memory data) =   XBNYaddress.call(abi.encodeWithSignature("getBalanceOf(address)",msg.sender));
+        /* (bool success, bytes memory data) = XBNYaddress.call(abi.encodeWithSignature("getBalanceOf(address)",msg.sender));
         bytes32 preUserBalance;
         uint offset = 32;
         assembly {
@@ -81,8 +112,16 @@ contract BNYprice is usingOraclize {
 
         require(userBalance >= value);
         if(userBalance >= value){
-            XBNYaddress.call(abi.encodeWithSignature("XBNY_AssetSolidification(address,uint256)",msg.sender,value));
+            XBNYaddress.call(abi.encodeWithSignature("reduceXBNY(address,uint256)",msg.sender,value));
             BNYaddress.call(abi.encodeWithSignature("BNY_AssetDesolidification(address,uint256)",msg.sender,(value*10000000000)/priceUINT));
+        } */
+
+        // Andy - is this an easier way to get balance? One liner.
+        uint userBalance = XbnyToken.getBalanceOf(msg.sender);
+
+        if(userBalance >= value){
+            XbnyToken.reduceXBNY(msg.sender,value);
+            BnyToken.BNY_AssetDesolidification(msg.sender,(value*10000000000)/priceUINT);
         }
     }
 
